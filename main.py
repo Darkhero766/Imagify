@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-from PIL import Image, ImageOps, ImageFilter
+from PIL import Image, ImageOps, ImageFilter, ImageEnhance
 
 stage = "home"
 
@@ -42,18 +42,22 @@ def home():
 
     st.write(" ")
 
-    if st.button("Rotate Image"):
+    if st.button("Rotate Image", type="primary"):
         st.session_state.stage  = "rotate"
 
     st.write(" ")
 
-    if st.button("Invert Colours"):
+    if st.button("Invert Colours", type="primary"):
         st.session_state.stage = "invert"
 
     st.write(" ")
 
-    if st.button("Blur Image"):
+    if st.button("Blur Image", type="primary"):
         st.session_state.stage = "blur"
+    st.write(" ")
+
+    if st.button("Change Brighttness", type="primary"):
+        st.session_state.stage = "bright"
     
 
 
@@ -149,8 +153,10 @@ def invert():
     st.write(" ")
     st.write(" ")
 
+    rgb = image.convert('RGB')
+
     if st.button("Invert colours", type="primary"):
-        invert_img = ImageOps.invert(image)
+        invert_img = ImageOps.invert(rgb)
 
         st.image(invert_img, caption="Inverted Image", width=500 )
 
@@ -182,6 +188,50 @@ def blur():
         st.session_state.stage = "home"
 
     
+def bright():
+    st.write(" ")
+
+    st.header("Increase the brightness")
+    st.write(" ")
+
+    image = Image.open(files)
+
+    brighty = st.slider("Increase brightness", min_value=0, max_value=5, step=0.1)
+
+    enhncer = ImageEnhance.Brightness(image)
+    
+    if st.button("Increase Brightness"):
+
+       b_image = enhncer.enhance(brighty)
+
+       st.image(b_image, caption="Brightened Image", width=500)
+
+    st.write(" ")
+    st.write(" ")
+
+    if st.button("Return home"):
+        st.session_state.stage = "home"
+
+
+def contrast():
+    st.write(" ")
+
+    st.header("Change The contrast")
+
+    image = Image.open(files)
+    st.write(" ")
+
+    contrastt = st.slider("Increasethe contrast ", min_value=0, max_value=5, step=0.1)
+
+    enhancer = ImageEnhance.Contrast(image)
+
+    c_image = enhancer.enhance(contrastt)
+
+    if st.button("Change Contrast"):
+        st.image(c_image, caption="Contrasted Image", width=500)
+
+    st.write(" ")
+
 
 if st.session_state.stage == "home":
     home()
@@ -200,3 +250,6 @@ elif st.session_state.stage == "invert":
 
 elif st.session_state.stage == "blur":
     blur()
+
+elif st.session_state.stage == "bright":
+    bright()
