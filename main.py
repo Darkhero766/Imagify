@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 from PIL import Image, ImageOps, ImageFilter, ImageEnhance
+from io import BytesIO
 
 stage = "home"
 
@@ -32,6 +33,9 @@ def home():
 
     st.write(" ")
     st.write(" ")
+
+    if st.button("Compress The Image", type="primary"):
+        st.session_state.stage = "compress"
     if st.button("Try Grayscale", type="primary"):
         st.session_state.stage = "grayscale"
 
@@ -59,6 +63,56 @@ def home():
     if st.button("Change Brighttness", type="primary"):
         st.session_state.stage = "bright"
     
+    st.write(" ")
+    if st.button("Contrast Image", type="primary"):
+        st.session_state.stage = "contrast"
+    
+
+
+def compress():
+    st.write(" ")
+    st.write(" ")
+
+    st.header("Compress Image")
+    st.write(" ")
+
+    image = Image.open(files)
+
+    original = len(files.getvalue()) / 1024
+
+    st.write(f"original size : {original:.2f} KB")
+
+    quality = st.slider("Select Quality", min_value=10, max_value=90, step=10)
+
+    if st.button("Compress", type="primary"):
+        st.write(" ")
+
+        new = BytesIO()
+
+        image  = image.convert("RGB")
+
+        image.save(new, format="JPEG", quality=quality)
+
+        new_size = len(new.getvalue()) / 1024
+
+        st.write(f"Now Size : {new_size:.2f} KB")
+
+        st.image(image, "compressed", width=500 )
+
+        st.download_button(label="Download Compress Imge", data = new, file_name="compress.jpg", mime="image/jpeg")
+
+
+    st.write(" ")
+    st.write(" ")
+
+    st.write(" ")
+
+    if st.button("Return To Home", type="secondary"):
+        st.session_state.stage = "home"
+
+        
+
+
 
 
 def grayscaler():
@@ -111,8 +165,8 @@ def resize():
         st.write(" ")
         st.write(" ")
          
-        if st.button("Return to Home"):
-            st.session_state.stage = "home" 
+    if st.button("Return to Home"):
+        st.session_state.stage = "home" 
 
 
             
@@ -196,7 +250,7 @@ def bright():
 
     image = Image.open(files)
 
-    brighty = st.slider("Increase brightness", min_value=0, max_value=5, step=0.1)
+    brighty = st.slider("Increase brightness", min_value=0.0, max_value=5.0, step=0.1)
 
     enhncer = ImageEnhance.Brightness(image)
     
@@ -221,7 +275,7 @@ def contrast():
     image = Image.open(files)
     st.write(" ")
 
-    contrastt = st.slider("Increasethe contrast ", min_value=0, max_value=5, step=0.1)
+    contrastt = st.slider("Increasethe contrast ", min_value=0.0, max_value=5.0, step=0.1)
 
     enhancer = ImageEnhance.Contrast(image)
 
@@ -231,6 +285,9 @@ def contrast():
         st.image(c_image, caption="Contrasted Image", width=500)
 
     st.write(" ")
+
+    if st.button("Return Home"):
+        st.session_state.stage = "home"
 
 
 if st.session_state.stage == "home":
@@ -253,3 +310,8 @@ elif st.session_state.stage == "blur":
 
 elif st.session_state.stage == "bright":
     bright()
+
+elif st.session_state.stage == "contrast":
+    contrast()
+elif st.session_state.stage == "compress":
+    compress()
