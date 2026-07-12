@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-from PIL import Image
+from PIL import Image, ImageOps, ImageFilter
 
 stage = "home"
 
@@ -36,10 +36,25 @@ def home():
         st.session_state.stage = "grayscale"
 
     st.write(" ")
-    st.write(" ")
 
     if st.button("Resize Your Image", type="primary"):
         st.session_state.stage = "resize"
+
+    st.write(" ")
+
+    if st.button("Rotate Image"):
+        st.session_state.stage  = "rotate"
+
+    st.write(" ")
+
+    if st.button("Invert Colours"):
+        st.session_state.stage = "invert"
+
+    st.write(" ")
+
+    if st.button("Blur Image"):
+        st.session_state.stage = "blur"
+    
 
 
 def grayscaler():
@@ -76,8 +91,8 @@ def resize():
     st.write(" ")
     st.subheader("Resize Your Image")
 
-    width = st.number_input("width")
-    height = st.number_input("height")
+    width = int(st.number_input("width"))
+    height = int(st.number_input("height"))
 
     st.write(" ")
     st.write(" ")
@@ -98,8 +113,73 @@ def resize():
 
             
 def rotate():
-    pass
+    st.write(" ")
+    st.write(" ")
+    
+    st.subheader("Rotate Image")
 
+    image = Image.open(files)
+
+    st.write(" ")
+
+    st.write(" ")
+
+    angle = st.sidebar.slider("Rotate Image", min_value=0)
+
+    rotate_image = image.rotate(angle)
+
+    if st.button("Rotate",type="primary" ):
+        st.write(" ")
+        st.image(rotate_image, caption="Rotated Image ",width=300)
+
+
+    st.write(" ")
+    if st.button("Return To Home", type="secondary"):
+        st.session_state.stage = "home"
+
+
+    
+def invert():
+    st.write(" ")
+    st.write(" ")
+    st.subheader("Invert Image Colors")
+
+    image = Image.open(files)
+
+    st.write(" ")
+    st.write(" ")
+
+    if st.button("Invert colours", type="primary"):
+        invert_img = ImageOps.invert(image)
+
+        st.image(invert_img, caption="Inverted Image", width=500 )
+
+        st.write(" ")
+        st.write(" ")
+
+    if st.button("Return To Home"):
+        st.session_state.stage = "home"
+
+def blur():
+    st.write(" ")
+    st.write(" ")
+
+    st.subheader("blur Your image")
+    st.write(" ")
+    st.write(" ")
+
+    image = Image.open(files)
+    st.write(" ")
+
+    if st.button("Blur Image"):
+        b_image = image.filter(ImageFilter.BLUR)
+        st.write(" ")
+
+        st.image(b_image, caption="Blurr Image", width=500)
+
+    st.write(" ")
+    if st.button("Return To home"):
+        st.session_state.stage = "home"
 
     
 
@@ -109,5 +189,14 @@ if st.session_state.stage == "home":
 elif st.session_state.stage == "grayscale":
     grayscaler()
 
-elif st.session_state == "resize":
+elif st.session_state.stage == "resize":
     resize()
+
+elif st.session_state.stage == "rotate":
+    rotate()
+
+elif st.session_state.stage == "invert":
+    invert()
+
+elif st.session_state.stage == "blur":
+    blur()
